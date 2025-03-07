@@ -1,0 +1,38 @@
+ CREATE TABLE  db_demo.transacciones (
+    numTransaccion INT AUTO_INCREMENT PRIMARY KEY,
+    Mes INT,
+    Monto DECIMAL(10,2),
+    Saldo DECIMAL(10,2)
+);
+
+
+DELIMITER //
+CREATE PROCEDURE db_demo.simulador_ahorro(
+    IN p_monto DECIMAL(10,2),
+    IN p_meses INT
+)
+BEGIN 
+    DECLARE v_meses INT DEFAULT 0;
+    DECLARE v_contr INT DEFAULT 1; 
+    DECLARE v_monto DECIMAL(10,2) DEFAULT 0;
+    DECLARE v_saldo DECIMAL(10,2) DEFAULT 0;
+    
+    SET v_meses = p_meses; 
+    SET v_monto = p_monto; 
+    
+    WHILE v_contr <= v_meses DO
+        SET v_saldo = v_saldo + v_monto; 
+        
+        INSERT INTO db_demo.transacciones (Mes, Monto, Saldo)
+        VALUES (v_contr, v_monto, v_saldo);
+        
+        SET v_contr = v_contr + 1;
+    END WHILE;
+END //
+DELIMITER ;
+
+
+CALL db_demo.simulador_ahorro(350, 5);
+
+
+SELECT * FROM db_demo.transacciones;
