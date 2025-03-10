@@ -1,0 +1,46 @@
+USE db_transacciones;
+CREATE TABLE db_transacciones.cuentas (
+    cuenta VARCHAR(10) PRIMARY KEY,
+    nombre_cliente VARCHAR(100),
+    total_creditos DECIMAL(10,2) DEFAULT 0.00,
+    total_debitos DECIMAL(10,2) DEFAULT 0.00,
+    saldo DECIMAL(10,2) DEFAULT 0.00
+);
+
+
+CREATE TABLE db_transacciones.transacciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cuenta VARCHAR(10),
+    fecha DATE,
+    credito DECIMAL(10,2) DEFAULT 0.00,
+    debito DECIMAL(10,2) DEFAULT 0.00,
+    FOREIGN KEY (cuenta) REFERENCES cuentas(cuenta)
+);
+DELIMITER //
+
+CREATE PROCEDURE actualizarsaldo(
+    IN p_cuenta VARCHAR(10),
+    IN p_fecha DATE,
+    IN p_credito DECIMAL(10,2),
+    IN p_debito DECIMAL(10,2)
+)
+BEGIN
+    
+    INSERT INTO transacciones (cuenta, fecha, credito, debito)
+    VALUES (p_cuenta, p_fecha, p_credito, p_debito);
+
+    
+    UPDATE cuentas
+    SET
+        total_creditos = total_creditos + p_credito,
+        total_debitos = total_debitos + p_debito,
+        saldo = saldo + p_credito - p_debito
+    WHERE cuenta = p_cuenta;
+
+   
+END//
+
+##agregar datos a la tabla cuentas##
+SELECT * FROM db_transacciones.cuentas;
+INSERT INTO cuentas (cuenta, nombre_cliente, total_creditos, total_debitos, saldo)
+VALUES ('20010001', 'Jesus', 0.00, 0.00, 0.00);
